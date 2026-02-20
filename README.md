@@ -2,6 +2,9 @@
 
 MagicBG is a sleek, modern, and powerful AI-driven tool that removes backgrounds from images instantly. Built with focus on speed and visual excellence, it provides professional-grade results in seconds.
 
+## 😊Live demo
+https://bg-remove.infinityfreeapp.com/
+
 ## 🚀 Features
 
 - **Instant Removal**: Get transparent backgrounds in one click.
