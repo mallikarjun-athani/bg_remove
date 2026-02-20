@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MagicBG | Pro AI Background Remover</title>
+  <link rel="stylesheet" href="css.css" />
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li>
+          <div class="logo-text">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="24" height="24" rx="6" fill="url(#paint0_linear)" />
+              <path d="M11 16L14 19L21 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <defs>
+                <linearGradient id="paint0_linear" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#6366f1" />
+                  <stop offset="1" stop-color="#06b6d4" />
+                </linearGradient>
+              </defs>
+            </svg>
+            MagicBG
+          </div>
+        </li>
+        <li><a href="#home">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home">
+      <h1>Remove Backgrounds <br />With AI Magic</h1>
+      <p>Instant, professional background removal. High quality results in seconds, no manual editing required.</p>
+    </section>
+
+    <section id="upload-section">
+      <div class="upload-card">
+        <label class="file-label" for="imageUpload">
+          <input type="file" id="imageUpload" accept="image/*" />
+          <div class="upload-icon">📸</div>
+          <span class="file-text">Choose an Image</span>
+          <small class="file-sub">Drop it here or click to browse</small>
+        </label>
+
+        <p class="hint">Supports JPG, PNG, up to 10MB. High accuracy guaranteed.</p>
+
+        <div class="visualization" id="visualization-area">
+          <div id="preview-container" class="tile">
+            <span class="tile-label">Original</span>
+            <div class="tile-inner">
+              <img id="preview" src="" alt="Uploaded preview" />
+              <div class="empty-msg" id="preview-empty">Your uploaded image will appear here</div>
+            </div>
+          </div>
+
+          <div id="result-container" class="tile">
+            <span class="tile-label">Result</span>
+            <div class="tile-inner">
+              <div class="loader-overlay" id="loader">
+                <div class="spinner"></div>
+                <div class="loader-text">AI IS WORKING...</div>
+              </div>
+              <img id="result" src="" alt="Background removed" />
+              <div class="empty-msg" id="result-empty">Background removed version will appear here</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="downloadBtn" class="button button-primary" style="display:none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download HD
+          </button>
+          <button id="retryBtn" class="button button-ghost" style="display:none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+            Try Another
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-left">
+      <div class="logo-text" style="font-size: 1.1rem;">✨ MagicBG</div>
+    </div>
+    <div class="footer-right">
+      <p>© 2025 MagicBG AI | Powered by Mallikarjun Athani</p>
+    </div>
+  </footer>
+
+  <script>
+    const imageUpload = document.getElementById("imageUpload");
+    const preview = document.getElementById("preview");
+    const result = document.getElementById("result");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const retryBtn = document.getElementById("retryBtn");
+    const loader = document.getElementById("loader");
+    const previewEmpty = document.getElementById("preview-empty");
+    const resultEmpty = document.getElementById("result-empty");
+
+    const API_URL = "https://api.remove.bg/v1.0/removebg";
+    const API_KEY = "NKKwz3AhFdcZVnHYAXg251kA";
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        loader.style.display = "flex";
+        downloadBtn.style.display = "none";
+        retryBtn.style.display = "none";
+        imageUpload.disabled = true;
+      } else {
+        loader.style.display = "none";
+        imageUpload.disabled = false;
+      }
+    }
+
+    imageUpload.addEventListener("change", async function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      previewEmpty.style.display = "none";
+      resultEmpty.style.display = "none";
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = "block";
+      result.style.display = "none";
+      downloadBtn.style.display = "none";
+      retryBtn.style.display = "none";
+
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("image_file", file);
+      formData.append("size", "auto");
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "X-Api-Key": API_KEY
+          },
+          body: formData
+        });
+
+        if (!response.ok) {
+          let msg = "Processing failed";
+          try {
+            const errJson = await response.json();
+            if (errJson && errJson.errors && errJson.errors[0] && errJson.errors[0].title) {
+              msg = errJson.errors[0].title;
+            }
+          } catch (_) { }
+          throw new Error(msg);
+        }
+
+        const blob = await response.blob();
+        const resultURL = URL.createObjectURL(blob);
+
+        result.src = resultURL;
+        result.style.display = "block";
+        downloadBtn.style.display = "inline-flex";
+        retryBtn.style.display = "inline-flex";
+
+        downloadBtn.onclick = function () {
+          const a = document.createElement("a");
+          a.href = resultURL;
+          a.download = "magicbg_" + Date.now() + ".png";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        };
+
+      } catch (error) {
+        console.error(error);
+        resultEmpty.textContent = "Error: " + error.message;
+        resultEmpty.style.display = "block";
+        retryBtn.style.display = "inline-flex";
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    retryBtn.addEventListener("click", () => {
+      imageUpload.value = "";
+      preview.src = "";
+      preview.style.display = "none";
+      result.src = "";
+      result.style.display = "none";
+      previewEmpty.style.display = "block";
+      resultEmpty.textContent = "Background removed version will appear here";
+      resultEmpty.style.display = "block";
+      downloadBtn.style.display = "none";
+      retryBtn.style.display = "none";
+    });
+  </script>
+</body>
+
+</html>
