@@ -32,4 +32,4 @@ MagicBG is designed to be "invisible yet powerful." The interface uses:
 - GitHub: [@mallikarjun-athani](https://github.com/mallikarjun-athani)
 
 ---
-*Created with ❤️ for designers and creators.*
+*Created with ❤️ Mallikarjun Athani. *
